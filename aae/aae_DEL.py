@@ -25,17 +25,19 @@ class AAE_DEL:
         self.config = config
 
         # Testing Parameters
-        # self.config.set('subsets', 6)  # 512 per subset by default
-        # self.config.set('num_generations', 5)
-        # self.config.set('population_size', 2000)
-        # self.config.set('init_num_epochs', 2)
-        # self.config.set('subsequent_num_epochs', 2)
+        self.config.set('batch_size', 256)
+        self.config.set('save_pops', True)
+        self.config.set('subsets', 24)
+        self.config.set('num_generations', 5)
+        self.config.set('population_size', 5000)  # population_size < batch_size * subsets
+        self.config.set('init_num_epochs', 2)
+        self.config.set('subsequent_num_epochs', 2)
 
         self.orig_dataset = SMILESDataset(self.config)  # SMILES dataset
         self.population_size = self.config.get('population_size')  # len(self.dataset)
         self.orig_vocab = copy.deepcopy(self.orig_dataset.get_vocab())
         self.trainer = AAE_Trainer(self.config, self.orig_vocab)
-        self.device = 'cuda' if self.config.get('use_gpu') else 'cpu'
+        self.device = 'cuda' if self.config.get('use_gpu') and torch.cuda.is_available() else 'cpu'
 
         # An index to mark the training run.
         # This allows for a unique file for each training run through the generations
@@ -76,9 +78,11 @@ class AAE_DEL:
                 time_model_training = end_model_training - start_model_training
             else:
                 # Update the Training Data
-                dataset.data = pd.concat([dataset.data, self.new_pop], ignore_index=True)
+                # dataset.data = pd.concat([dataset.data, self.new_pop], ignore_index=True)
+                dataset.data = self.new_pop
                 print('Dataset Shape', dataset.data.shape)
                 dataset.data = dataset.data.drop_duplicates(subset=['smiles']).reset_index(drop=True)
+
                 print('Dataset Shape', dataset.data.shape)
                 print('New Data:', dataset.data.tail(5))
 
@@ -121,6 +125,7 @@ class AAE_DEL:
                 samples_random = np.array(samples_random)
                 samples_random = samples_random[marks]  # Filter Invalid Samples
                 samples_random = [x for x in samples_random if x]  # Filter Empty Strings
+                print(samples_random)
                 samples_random = self.get_properties(samples_random)  # Convert to pd DataFrame and Add Properties
 
                 # Adjust Column Order
@@ -137,13 +142,14 @@ class AAE_DEL:
                 print('Time Random Sampling:', time_random_sampling)
 
             # Back GPU (if available)
-            self.trainer.model.to(self.device)
-            print('Model is now on:', self.device)
+            # print('Model is now on:', self.device)
+            # self.trainer.model.to(self.device)
+            # print('Model is now on:', self.device)
 
             # Get Latent Representation
             print('Get Latent Representation of Current Population')
             z = self.get_z(data=samples)
-            z = z.cpu().numpy()
+            z = z.numpy()
 
             # Evolutionary Operations
             if g == 0:
@@ -152,6 +158,9 @@ class AAE_DEL:
 
             # If population = 0, use all training samples, otherwise use specified number
             if self.population_size > 0:
+                length_samples = len(samples)
+                print("Samples Length:", length_samples)
+                print("Population Size:", self.population_size)
                 ind = np.random.choice(len(samples), self.population_size, replace=False)  # Length: Population SIze
 
                 # Randomly Select Samples, Properties and Z, based on ind
@@ -254,12 +263,16 @@ class AAE_DEL:
                 if 'rank' in cols:
                     cols.remove('rank')
 
-                # Seperate Ranking from the New Population
+                # Separate Ranking from the New Population
                 # Ranking is not in the original dataframe structure
                 # Would cause error in subsequent training if left
+                # Filter out the excess ranks as well...
+                # Fixed blank row error in final population save
+                self.new_rank = sorted_combined_samples.loc[:self.population_size - 1, ['rank']]
                 self.new_pop = sorted_combined_samples.loc[:self.population_size - 1, cols]
                 print('The shape of the new pop is', self.new_pop.shape)
                 print('The shape of new rank is', self.new_rank.shape)
+                print(f'New Pop: {self.new_pop.head()}')
             else:
                 # Rank All Samples
                 rank, Fs = self.fast_nondominated_sort(combined_properties)
@@ -665,8 +678,11 @@ class AAE_DEL:
         """
         if g == self.config.get('num_generations') - 1:
             g = 'final'
-        new_rank = pd.DataFrame(self.new_rank, columns=['rank'])
-        data_to_save = pd.concat([self.new_pop, new_rank], axis=1)
+        if self.config.get('ranking') == 'sopr':
+            new_rank = pd.DataFrame(self.new_rank, columns=['rank'])
+            data_to_save = pd.concat([self.new_pop, new_rank], axis=1)
+        else:
+            data_to_save = self.new_pop
         data_to_save = data_to_save.sort_values(['rank'], ascending=True, ignore_index=True)
         print('Data to save:', data_to_save)
         filename = self.config.path('samples_del') / f"new_pop_{g}.csv"

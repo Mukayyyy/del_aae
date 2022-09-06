@@ -48,7 +48,7 @@ def command_parser():
         nargs='+', type=int, default=[640, 256],
         help='Number of Features for Discriminator Layers'
     )
-    # Discriminator Layers
+    # Multilayer Perceptron Layers
     subps_aae.add_argument(
         "--mlp_layers",
         nargs='+', type=int, default=[640, 256],
@@ -63,7 +63,7 @@ def command_parser():
     # Dropout
     subps_aae.add_argument(
         "--dropout",
-        type=float, default=0,
+        type=float, default=0.3,
         help='Dropout Probability'
     )
     # Bidirectional
@@ -81,7 +81,7 @@ def command_parser():
     # Batch Size
     subps_aae.add_argument(
         "--batch_size",
-        type=int, default=512,
+        type=int, default=64,
         help='Batch Size'
     )
     # Epochs
@@ -93,7 +93,7 @@ def command_parser():
     # Learning Rate
     subps_aae.add_argument(
         "--optim_lr",
-        type=float, default=0.001,
+        type=float, default=0.0007,
         help='Learning Rate'
     )
     # Seed
@@ -205,7 +205,7 @@ def command_parser():
         nargs='+', type=int, default=[640, 256],
         help='Number of Features for Discriminator Layers'
     )
-    # Discriminator Layers
+    # Multilayer Perceptron Layers
     subps_aae_del.add_argument(
         "--mlp_layers",
         nargs='+', type=int, default=[640, 256],
@@ -220,7 +220,7 @@ def command_parser():
     # Dropout
     subps_aae_del.add_argument(
         "--dropout",
-        type=float, default=0,
+        type=float, default=0.3,
         help='Dropout Probability'
     )
     # Bidirectional
@@ -240,13 +240,13 @@ def command_parser():
     # Batch Size
     subps_aae_del.add_argument(
         "--batch_size",
-        type=int, default=512,
+        type=int, default=64,
         help='Batch Size'
     )
     # Initial Epochs
     subps_aae_del.add_argument(
         "--init_num_epochs",
-        type=int, default=70,
+        type=int, default=50,
         help='Number of Initial Epochs'
     )
     # Learning Rate
@@ -284,19 +284,19 @@ def command_parser():
     # Number of Generations
     subps_aae_del.add_argument(
         '--num_generations',
-        type=int, default=20,
+        type=int, default=10,
         help='Number of DEL Generations'
     )
     # Population Size
     subps_aae_del.add_argument(
         '--population_size',
-        type=int, default=10000,
+        type=int, default=20000,
         help='Population Size'
     )
     # Subsequent Epochs
     subps_aae_del.add_argument(
         "--subsequent_num_epochs",
-        type=int, default=10,
+        type=int, default=30,
         help='Number of Subsequent Epochs After First Generation'
     )
     # Probability of Tournament Selection
@@ -335,7 +335,7 @@ def command_parser():
     # Generate Samples
     subps_aae_del.add_argument(
         '--gen_samples',
-        type=int, default=1000,
+        type=int, default=2000,
         help='Number of Samples to Generate from Gauss'
     )
 
@@ -350,7 +350,7 @@ def command_parser():
     # Model Name
     subps_aae_del.add_argument(
         '--model_name',
-        type=str, default='saved_AAE_model.pt',
+        type=str, default='saved_AAE_DEL_model.pt',
         help='Name to save the model with'
     )
 

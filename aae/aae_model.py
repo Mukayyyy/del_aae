@@ -198,10 +198,10 @@ class AAE(nn.Module):
                     break
 
                 currents[is_end, :] = self.vocab.pad
-                samples.append(currents.cpu())
+                # samples.append(currents.cpu())
+                samples.append(currents)
 
                 lengths[~is_end] += 1
-
 
                 prevs = currents
 

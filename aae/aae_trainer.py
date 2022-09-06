@@ -26,14 +26,14 @@ def print_results(epoch, losses, duration, total_epochs):
 
 def init_optim(model, lr):
     return {
-        'autoencoder': optim.Adam(
+        'autoencoder': optim.AdamW(
             list(model.encoder.parameters()) +
             list(model.decoder.parameters()), lr=lr
         ),
-        'discriminator': optim.Adam(
+        'discriminator': optim.AdamW(
             model.discrim.parameters(), lr=lr
         ),
-        'property_predictor': optim.Adam(
+        'property_predictor': optim.AdamW(
             model.mlp.parameters(), lr=lr
         )
     }
@@ -81,7 +81,7 @@ class AAE_Trainer:
 
         # Info stored for presentation/ report purposes
         # epoch_info = {key: [0] for key in keys}
-        epoch_info = {key: 0 for key in keys[2:-1]}
+        # epoch_info = {key: 0 for key in keys[2:-1]}
         # Info stored for calculation purposes
         # losses = {key: 0 for key in keys[2:]}
 
@@ -91,10 +91,10 @@ class AAE_Trainer:
             # epoch_info['epoch'].append(epoch)
 
             ''' PREP DATA '''
-            encoder_inputs = (data.to(self.device) for data in encoder_inputs)
-            decoder_inputs = (data.to(self.device) for data in decoder_inputs)
-            decoder_targets = (data.to(self.device) for data in decoder_targets)
-            properties = properties.to(self.device)
+            # encoder_inputs = (data.to(self.device) for data in encoder_inputs)
+            # decoder_inputs = (data.to(self.device) for data in decoder_inputs)
+            # decoder_targets = (data.to(self.device) for data in decoder_targets)
+            # properties = properties.to(self.device)
 
             ''' RECONSTRUCTION PHASE '''
             latent_cell_state = model.encoder_forward(*encoder_inputs)  # Shape: Batch size x latent_size
@@ -112,7 +112,7 @@ class AAE_Trainer:
             # Predicted Property Loss
             pred_properties_loss = criterions['property_predictor'](pred_properties, properties)
             # epoch_info['property_predictor'].append(pred_properties_loss.detach().item())
-            epoch_info['property_predictor'] = pred_properties_loss.detach().item()
+            # epoch_info['property_predictor'] = pred_properties_loss.detach().item()
 
             # Zip the decoder outputs and the lengths, as well as the target output and lengths
             outputs = torch.cat(
@@ -131,13 +131,9 @@ class AAE_Trainer:
                 )
                 gen_loss = criterions['discriminator'](discrim_output, discrim_target)
                 total_loss = recon_loss + gen_loss
-                epoch_info['autoencoder'] = (
-                                                    epoch_info['autoencoder'] * (idx // 2) + recon_loss.detach().item()
-                                            ) / (idx // 2 + 1)
-                epoch_info['generator'] = (
-                                                  epoch_info['generator'] * (idx // 2) +
-                                                  gen_loss.detach().item()
-                                          ) / (idx // 2 + 1)
+                # epoch_info['autoencoder'] = ( epoch_info['autoencoder'] * (idx // 2) + recon_loss.detach().item() )
+                # / (idx // 2 + 1) epoch_info['generator'] = ( epoch_info['generator'] * (idx // 2) +
+                # gen_loss.detach().item() ) / (idx // 2 + 1)
             else:
                 discrim_target = torch.zeros(
                     latent_cell_state.shape[0], 1, device=self.device
@@ -151,19 +147,19 @@ class AAE_Trainer:
                 )
                 discrim_loss = criterions['discriminator'](discrim_output, discrim_target)
                 total_loss = 0.5 * gen_loss + 0.5 * discrim_loss
-                epoch_info['discriminator'] = (
-                                                      epoch_info['discriminator'] * (idx // 2) + total_loss.item()
-                                              ) / (idx // 2 + 1)
+                # epoch_info['discriminator'] = (
+                #                                       epoch_info['discriminator'] * (idx // 2) + total_loss.item()
+                #                               ) / (idx // 2 + 1)
 
             total_loss += pred_properties_loss
 
             ''' PRINT LOSS INFO '''
             if idx % 100 == 0:
-                print(f"Auto Encoder Loss: {epoch_info['autoencoder']}")
-                print(f"Generator Loss: {epoch_info['generator']}")
-                print(f"Discriminator Loss: {epoch_info['discriminator']}")
-                print(f"MLP Loss: {epoch_info['property_predictor']}")
-                print()
+                #     print(f"Auto Encoder Loss: {epoch_info['autoencoder']}")
+                #     print(f"Generator Loss: {epoch_info['generator']}")
+                #     print(f"Discriminator Loss: {epoch_info['discriminator']}")
+                #     print(f"MLP Loss: {epoch_info['property_predictor']}")
+                print(f'Batch: {idx}')
 
             if optimizers is not None:
                 optimizers['autoencoder'].zero_grad()
@@ -224,7 +220,6 @@ class AAE_Trainer:
                 for scheduler in schedulers.values():
                     scheduler.step()
             ''' RECENT ADD '''
-
 
             self.train_epoch(epoch=epoch, model=self.model, loader=loader, keys=keys,
                              optimizers=self.optimizers, criterions=self.criterion)

@@ -116,15 +116,17 @@ class CharVocab:
 
 
 def string2tensor(string, vocab):
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
     ids = vocab.string2ids(string, add_bos=True, add_eos=True)
     tensor = torch.tensor(
-        ids, dtype=torch.long
+        ids, dtype=torch.long, device=device
     )
     return tensor
 
 
 def property2tensor(property):
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
     tensor = torch.tensor(
-        property, dtype=torch.long
+        property, dtype=torch.long, device=device
     )
     return tensor

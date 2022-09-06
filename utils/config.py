@@ -8,9 +8,10 @@ from pathlib import Path
 import shutil
 
 from .filesystem import (
-    load_pickle, save_pickle, commit, save_json, load_json)
+    # load_pickle, save_pickle, commit, save_json, load_json)
+    load_pickle, save_pickle, save_json, load_json)
 
-PROJ_DIR = Path("PycharmProjects/del_aae").absolute()
+PROJ_DIR = Path(".")
 # print(PROJ_DIR)
 DATA_DIR = PROJ_DIR / 'DATA'
 # print(DATA_DIR)
@@ -109,7 +110,7 @@ def set_random_seed(seed=None):
 
 
 def get_run_info(name):
-    start_time = datetime.now().strftime('%Y-%m-%d@%X')
+    start_time = datetime.now().strftime('%Y-%m-%d@%H-%M-%S')
     host_name = socket.gethostname()
     run_name = f'{start_time}-{host_name}-{name}'
     return run_name, host_name, start_time
@@ -254,11 +255,11 @@ class Config:
 
     def save(self):
         # commit if you can
-        try:
-            commit_hash = commit(self.get('title'), self.get('start_time'))
-        except Exception:
-            commit_hash = "<automatic commit disabled>"
-        self._PARAMS['commit_hash'] = commit_hash
+        # try:
+        #     commit_hash = commit(self.get('title'), self.get('start_time'))
+        # except Exception:
+        #     commit_hash = "<automatic commit disabled>"
+        self._PARAMS['commit_hash'] = "<automatic commit disabled>"
 
         path = self.path('config') / self.JSON_FILENAME
         save_json(self.params(), path)
