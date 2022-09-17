@@ -12,6 +12,7 @@ from .filesystem import (
     load_pickle, save_pickle, save_json, load_json)
 
 PROJ_DIR = Path(".")
+# PROJ_DIR = Path("PycharmProjects/del_aae").absolute()
 # print(PROJ_DIR)
 DATA_DIR = PROJ_DIR / 'DATA'
 # print(DATA_DIR)

@@ -22,7 +22,8 @@ run_dirs = [
     # '../RUNS/VALID/2022-08-17@10_10_40-manshari-desktop-ZINC-SOPR',
     # '../RUNS/2022-08-30@18-51-27-manshari-desktop-ZINC-FNDR',
     # '../RUNS/VALID/2022-08-16@08_02_19-manshari-desktop-PCBA-SOPR',
-    '../RUNS/2022-08-31@09_07_00-manshari-desktop-PCBA-FNDS',
+    # '../RUNS/2022-08-31@09_07_00-manshari-desktop-PCBA-FNDS',
+    '../RUNS/2022-09-06@16-45-59-manshari-desktop-ZINC',
     # '../RUNS/2022-09-02@16_08_30-manshari-desktop-PCBA-SOPR-8',
     # '../RUNS/VALID/2022-08-18@09_54_34-manshari-desktop-ZINCMOSES',
 

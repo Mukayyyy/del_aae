@@ -25,13 +25,13 @@ class AAE_DEL:
         self.config = config
 
         # Testing Parameters
-        self.config.set('batch_size', 256)
         self.config.set('save_pops', True)
-        self.config.set('subsets', 24)
-        self.config.set('num_generations', 5)
-        self.config.set('population_size', 5000)  # population_size < batch_size * subsets
-        self.config.set('init_num_epochs', 2)
-        self.config.set('subsequent_num_epochs', 2)
+        # self.config.set('batch_size', 256)
+        # self.config.set('subsets', 24)
+        # self.config.set('num_generations', 5)
+        # self.config.set('population_size', 5000)  # population_size < batch_size * subsets
+        # self.config.set('init_num_epochs', 2)
+        # self.config.set('subsequent_num_epochs', 2)
 
         self.orig_dataset = SMILESDataset(self.config)  # SMILES dataset
         self.population_size = self.config.get('population_size')  # len(self.dataset)
@@ -678,11 +678,11 @@ class AAE_DEL:
         """
         if g == self.config.get('num_generations') - 1:
             g = 'final'
-        if self.config.get('ranking') == 'sopr':
-            new_rank = pd.DataFrame(self.new_rank, columns=['rank'])
-            data_to_save = pd.concat([self.new_pop, new_rank], axis=1)
-        else:
-            data_to_save = self.new_pop
+        # if self.config.get('ranking') == 'sopr':
+        new_rank = pd.DataFrame(self.new_rank, columns=['rank'])
+        data_to_save = pd.concat([self.new_pop, new_rank], axis=1)
+        # else:
+        #     data_to_save = self.new_pop
         data_to_save = data_to_save.sort_values(['rank'], ascending=True, ignore_index=True)
         print('Data to save:', data_to_save)
         filename = self.config.path('samples_del') / f"new_pop_{g}.csv"
