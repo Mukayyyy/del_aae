@@ -326,8 +326,8 @@ def command_parser():
     subps_aae_del.add_argument(
         '--ranking',
         type=str,
-        choices=['sopr', 'fnds'],
-        default='sopr',
+        choices=['sopr', 'fndr'],
+        default='fndr',
         help="Type of Ranking Method"
 
     )
