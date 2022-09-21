@@ -1,6 +1,7 @@
 # Author: Karl Grantham
 # 2022-03-26
 
+import os
 import torch
 from pathlib import Path
 import pandas as pd
@@ -13,24 +14,18 @@ print("device", device)
 
 PROJ_DIR = Path(".")
 
+# use_rbf = False
 use_rbf = True
 
 run_dirs = [
 
     # Windows
-    # '../RUNS/VALID/2022-08-26@19-48-27-SHERIFF-ALPHA-PC-ZINC-SOPR',
-    # '../RUNS/VALID/2022-08-17@10_10_40-manshari-desktop-ZINC-SOPR',
-    # '../RUNS/2022-08-30@18-51-27-manshari-desktop-ZINC-FNDR',
-    # '../RUNS/VALID/2022-08-16@08_02_19-manshari-desktop-PCBA-SOPR',
-    # '../RUNS/2022-08-31@09_07_00-manshari-desktop-PCBA-FNDS',
-    '../RUNS/2022-09-06@16-45-59-manshari-desktop-ZINC',
-    # '../RUNS/2022-09-02@16_08_30-manshari-desktop-PCBA-SOPR-8',
-    # '../RUNS/VALID/2022-08-18@09_54_34-manshari-desktop-ZINCMOSES',
+    # f'../RUNS/{directory}' for directory in os.listdir("../RUNS")
+    # '../DATA/ZINC/RANKED'
+    '../DATA/PCBA/RANKED'
 
     # Linux
-    # PROJ_DIR / 'RUNS/2022-08-17@10_10_40-manshari-desktop-ZINC',
-    # PROJ_DIR / 'RUNS/2022-08-16@08_02_19-manshari-desktop-PCBA',
-    # PROJ_DIR / 'RUNS/2022-08-18@09_54_34-manshari-desktop-ZINCMOSES',
+    # PROJ_DIR / directory for directory in os.listdir(str(PROJ_DIR))
 ]
 
 
@@ -50,7 +45,7 @@ def rank_by_fronts(samples):
     new_rank = []
     count = 0
     i = 0
-    print(f'Number of Fronts: {len(Fs)}')
+    # print(f'Number of Fronts: {len(Fs)}')
     #     Add Fronts 1, 2, 3, ... iteratively
     while (count + len(Fs[i])) <= population_size:
         new_pop.append(samples.loc[Fs[i], :])
@@ -168,13 +163,16 @@ def crowding_distance_all_fronts(P, Fs, f_min, f_max, n_jobs):
 
 
 count = 0
-for run_dir in run_dirs:
+for run_dir in run_dirs[:1]:
+    # print(run_dir)
+
     # Windows
-    finalGenStr = run_dir + '/results/samples_del/new_pop_final.csv'
-    # finalGenStr = run_dir + '/results/samples_del/new_pop_8.csv'
+    # finalGenStr = run_dir + '/results/samples_del/new_pop_final.csv'
+    finalGenStr = run_dir + '/train.csv'
 
     # Linux
     # finalGenStr = run_dir / 'results/samples_del/new_pop_final.csv'
+
     # print('Final Gen String', finalGenStr)
 
     count = count + 1
@@ -185,20 +183,29 @@ for run_dir in run_dirs:
         index_col=0,
         skip_blank_lines=True
     )
-    print("Number of Rows:", len(finalGenData))
-    finalGenData.dropna(inplace=True)
+
+    # properties = ['qed', 'SAS', 'logP', 'rank']
+    properties = ['qed', 'SAS', 'logP']
+    # print("properties", properties)
+
+    original_data_length = len(finalGenData)
+    print("Number of Rows:", original_data_length)
+    # finalGenData.dropna(inplace=True)
+    finalGenData.dropna(subset=properties, inplace=True)
     finalGenData.reset_index(inplace=True, drop=True)
-    print("Number of Non-Null Samples:", len(finalGenData))
+    post_dropna_data_length = len(finalGenData)
+    # print("Number of Non-Null Samples:", post_dropna_data_length)
     # print("final gen data", finalGenData)
 
-    # finalGenData = finalGenData.head(1000)
+    finalGenData = finalGenData.head(200000)
 
     if use_rbf:
         finalGenData = rank_by_fronts(finalGenData)
         # print('After Rank By Fronts (Head)', finalGenData.head(5))
         # print('After Rank By Fronts (Tail)', finalGenData.tail(5))
     finalGenData = finalGenData.loc[finalGenData['rank'] == 0, :]
-    print("Number of Front 0 Data Points:", len(finalGenData))
+    front_zero_count = len(finalGenData)
+    # print("Number of Front 0 Data Points:", front_zero_count)
     # print("final gen data min rank", finalGenData)
 
     # properties = ['qed', 'SAS', 'logP', 'rank']
@@ -218,7 +225,7 @@ for run_dir in run_dirs:
     # ref_point = [qedMin[0], sasMin[0], logpMin[0], scoreMin[0]]
     # ref_point = [qedMin[0], sasMin[0], logpMin[0]]
     ref_point = [0, -10, -8.2521]
-    print("Reference Point", ref_point)
+    # print("Reference Point", ref_point)
 
     hv = Hypervolume(ref_point=torch.tensor(ref_point, dtype=dtype, device=device))
     # print("hyper volume", hv)
@@ -232,4 +239,5 @@ for run_dir in run_dirs:
     volume10 = hv.compute(torch_tensor10)
     # print("volume", volume10)
 
-    print(str(run_dir) + " " + "Generation (Final): " + str(volume10))
+    print(f'{run_dir} Generation (Final): {volume10}')
+    print(f'{str(run_dir)} ({front_zero_count}/{post_dropna_data_length}/{original_data_length}): {volume10:.4f}')
