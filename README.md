@@ -1,47 +1,44 @@
-This README file contains only old info about the original FragVAE.
-
-# Code for the paper "A Deep Generative Model for Fragment-Based Molecule Generation" (AISTATS 2020)
-
-Link to the paper: [arXiv](https://arxiv.org/abs/2002.12826)
+# Code for the paper "Adversarial Deep Evolutionary Learning for Drug Design" (Revised CIBCB 2022)
 
 ### Installation
+
+These instructions are based on a Linux based Operating System. 
+Ubuntu was primarily used in the development of this project.
+Some runs were done on Windows toward the final stages, as such, there are commented duplicate code blocks to account for the different systems.
+
+Requirements
+The only requirement for this project is the latest Conda package manager.
+This can be downloaded from the Anaconda Python distribution [here](https://www.anaconda.com/distribution).
 
 Run:
 
 `source scripts/install.sh`
 
-This will take care of installing all required dependencies.
-If you have trouble during the installation, try running each line of the `scripts/install.sh` file separately (one by one) in your shell.
+This installation will create and activate a new conda venv named `del_aae`, as well as install all required dependencies in this venv. 
 
-The only required dependency is the latest Conda package manager, which you can download with the Anaconda Python distribution [here](https://www.anaconda.com/distribution/).
+If you would like to install these dependencies on a pre-existing environment, please comment out the first two commands (the lines under the comments marked with a two `#`).
+That is, `conda create --name del_aae -y` becomes `#conda create --name del_aae -y` and `conda activate del_aae` becomes `#conda activate del_aae`
+
+
+If you have trouble during the installation, try running each line of the `scripts/install.sh` file separately (one by one) in your shell.
 
 After that, you are all set up.
 
 
-### Preprocessing
-
-First, you need to download the data and do some preprocessing. To do this, run:
-
-`python manage.py preprocess --dataset <DATASET_NAME>`
-
-where `<DATASET_NAME>` must be `ZINC` or `PCBA`. At the moment, we support only these two.
-
-Use `python manage.py preprocess --help` to see other useful options for preprocessing.
-
-This will download the necessary files in the `DATA` folder, and will preprocess them as described in the paper.
-
-
 ### Training
 
-After preprocessing, you can train the model running:
+You can train the model running:
 
-`python manage.py train --dataset <DATASET_NAME>`
+`python manage.py del --dataset <DATASET_NAME>`
 
 where `<DATASET_NAME>` is defined as described above.
+By default, samples are saved every first, half and final generation. 
+If you wish to save every sample from every generation, add the `--save_pops` option.
 
 If you wish to train using a GPU, add the `--use_gpu` option.
 
-Check out `python manage.py train --help` to see all the other hyperparameters you can change.
+
+Check out `python manage.py del --help` to see all the other hyperparameters you can change.
 
 Training the model will create folder `RUNS` with the following structure:
 
@@ -49,67 +46,23 @@ Training the model will create folder `RUNS` with the following structure:
 RUNS
 └── <date>@<time>-<hostname>-<dataset>
     ├── ckpt
-    │   ├── best_loss.pt
-    │   ├── best_valid.pt
-    │   └── last.pt
+    ├── code
     ├── config
     │   ├── config.pkl
-    │   ├── emb_<embedding_dim>.dat
-    │   ├── params.json
-    │   └── vocab.pkl
+    │   └── params.json
+    ├── model
+    │   └── del_pretrain.pt
     ├── results
+    │   ├── bo
     │   ├── performance
-    │   │   ├── loss.csv
-    │   │   └── scores.csv
-    │   └── samples
+    │   │   ├── running_time.csv
+    │   │   ├── vnds_dgm.csv
+    │   │   └── vnds_pop.csv
+    │   ├── samples
+    │   └── samples_del
     └── tb
-        └── events.out.tfevents.<tensorboard_id>.<hostname>
 ```
 
 
 the `<date>@<time>-<hostname>-<dataset>` folder is a snapshot of your experiment, which will contain all the data collected during training.
-
-You can monitor the progress of training using tensorboardX, just run
-
-`tensorboard --logdir RUNS`
-
-during training and check the `localhost:6006` page in your favorite browser.
-
-
-### Sampling
-
-After the model is trained, you can sample from it using
-
-`python manage.py sample --run <RUN_PATH>`
-
-where `<RUN_PATH>` is the path to the run directory of the experiment, which will be something like `RUNS/<date>@<time>-<hostname>-<dataset>` (`<date>`, `<time>`, `<hostname>`, `<dataset>` are placeholders of the actual data).
-
-Check out `python manage.py sample --help` to see all the sampling options.
-
-You will find your samples in the `results/samples` folder on your experiment run directory.
-
-
-### Postprocessing
-
-After you have sampled the model, you wish to conduct some common postprocessing operations such as calculate statistics on the samples, aggregate multiple sample files and the test data in one big file for plotting, etc.
-
-Then, you need to run:
-
-`python manage.py postprocess --run <RUN_PATH>`
-
-where `<RUN_PATH>` is obtained as described above.
-
-Check out `python manage.py postprocess --help` to see all available options.
-
-
-### Plotting
-
-If you wish to obtain similar figures as the ones in the paper on your samples, just run:
-
-`python manage.py plot --run <RUN_PATH>`
-
-where `<RUN_PATH>` is defined as described above.
-
-### Samples
-
-You can find the 20k SMILES samples used in the paper for the analysis in the SAMPLES folder.
+The `code` folder contains a snapshot of the code used to run the experiment and `samples_del` folder contains the samples used in the experiment.
