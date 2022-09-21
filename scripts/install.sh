@@ -1,9 +1,8 @@
-# create venv with all required dependencies
-# create conda env
-#conda create --name del_aae -y
+## create conda env
+conda create --name del_aae -y
 
-# activate conda env
-#conda activate del_aae
+## activate conda env
+conda activate del_aae
 
 # install pip
 conda install pip -y
