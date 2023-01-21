@@ -102,8 +102,8 @@ class AAE_DEL:
 
             # Work-around
             # samples = self.get_properties(dataset.data['smiles'].values.tolist())  # DataFrame with properties
-            properties = samples.loc[:, ['qed', 'SAS', 'logP']]
-            properties['qed'] = -properties['qed']  # To be minimized
+            properties = samples.loc[:, ['SAS', 'logP', 'CA9', 'GPX4']]
+            # properties['qed'] = -properties['qed']  # To be minimized
             properties = properties.to_numpy()
             print(len(properties))
 
@@ -248,8 +248,8 @@ class AAE_DEL:
             combined_samples = combined_samples.drop_duplicates(subset=['smiles']).reset_index(drop=True)
 
             # Combined Properties
-            combined_properties = combined_samples.loc[:, ['qed', 'SAS', 'logP']]
-            combined_properties['qed'] = -combined_properties['qed']  # To be minimized
+            combined_properties = combined_samples.loc[:, ['SAS', 'logP', 'CA9', 'GPX4']]
+            # combined_properties['qed'] = -combined_properties['qed']  # To be minimized
             combined_properties = combined_properties.to_numpy()
 
             # Create New Population Based On New Combined Ranking
@@ -399,19 +399,19 @@ class AAE_DEL:
         # Using the method below, we can avoid the need for a double sort
 
         N = len(properties)
-        qed, sas, logp = properties[:, 0], properties[:, 1], properties[:, 2]
+        sas, logp, ca9, gpx4 = properties[:, 0], properties[:, 1], properties[:, 2], properties[:, 3]
 
         # Get Orders of Properties
-        qed_order, sas_order, logp_order = np.argsort(qed), np.argsort(sas), np.argsort(logp)
+        sas_order, logp_order, ca9_order, gpx4_order = np.argsort(sas), np.argsort(logp), np.argsort(ca9), np.argsort(gpx4)
 
         # Get Ranks of Properties
-        qed_rank, sas_rank, logp_rank = \
-            np.empty_like(qed_order), np.empty_like(sas_order), np.empty_like(logp_order)
-        qed_rank[qed_order], sas_rank[sas_order], logp_rank[logp_order] = \
+        sas_rank, logp_rank, ca9_rank, gpx4_rank = \
+            np.empty_like(sas_order), np.empty_like(logp_order), np.empty_like(ca9_order), np.empty_like(gpx4_order)
+        sas_rank[sas_order], logp_rank[logp_order], ca9_rank[ca9_order], gpx4_rank[gpx4_order] = \
             np.arange(N), np.arange(N), np.arange(N)
 
         # Get Rank Sums
-        ranks = np.array([np.sum([qed_rank[i], sas_rank[i], logp_rank[i]]) for i in range(N)])
+        ranks = np.array([np.sum([sas_rank[i], logp_rank[i], ca9_rank[i], gpx4_rank[i]]) for i in range(N)])
         return ranks
 
     def tournament_selection_c(self, rank, prob_ts, k=2):

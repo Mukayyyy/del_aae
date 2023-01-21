@@ -3,9 +3,12 @@ import pandas as pd
 from joblib import Parallel, delayed
 
 from rdkit.Chem import Crippen, QED
+from rdkit.Chem import Descriptors
 
 from .conversion import mols_from_smiles
 from .sascorer.sascorer import calculateScore
+from .advina import calculateDockingScore
+from .advina_gpx4 import calculateDockingScoreGPX4
 
 
 def logp(mol):
@@ -24,8 +27,22 @@ def sas(mol):
     return calculateScore(mol) if mol else None
 
 
+def docking(mol):
+    score = calculateDockingScore(mol) if mol else None
+    return score
+
+
+def docking_gpx4(mol):
+    score = calculateDockingScoreGPX4(mol) if mol else None
+    return score
+
+
+def tpsa(mol):
+    return Descriptors.TPSA(mol) if mol else None
+
+
 def add_property(dataset, name, n_jobs):
-    fn = {"qed": qed, "SAS": sas, "logP": logp, "mr": mr}[name]
+    fn = {"qed": qed, "SAS": sas, "logP": logp, "mr": mr, "CA9": docking, "GPX4": docking_gpx4, "tpsa": tpsa}[name]
     smiles = dataset.smiles.tolist()
     mols = mols_from_smiles(smiles)
     pjob = Parallel(n_jobs=n_jobs, verbose=0)

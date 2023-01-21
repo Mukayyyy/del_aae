@@ -51,12 +51,18 @@
         "logP",
         "mr",
         "qed",
-        "SAS"
+        "SAS",
+        "CA9",
+        "GPX4",
+        "tpsa"
     ],
     "properties": [
         "qed",
         "logP",
         "SAS",
-        "mr"
+        "mr",
+        "CA9",
+        "GPX4",
+        "tpsa"
     ]
 }

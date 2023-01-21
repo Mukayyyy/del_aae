@@ -44,7 +44,7 @@ from utils.filesystem import load_dataset
 class SMILESDataset(Dataset):
     def __init__(self, config, kind='train', data=None):
         self.config = config
-        self.fieldnames = ['smiles', 'qed', 'SAS', 'logP']
+        self.fieldnames = ['smiles', 'SAS', 'logP', 'CA9', 'GPX4']
         if kind != 'given':
             self.data = load_dataset(config, kind=kind)
         else:

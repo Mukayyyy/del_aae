@@ -106,9 +106,8 @@ class DEL():
 
             # get current training data
             samples = self.dataset.data  # pd DataFrame with properties
-            properties = samples.loc[:, ['qed', 'SAS',
-                                         'logP']]  # qed: the larger the better, SAS: the smaller the better, logP: the smaller the better
-            properties['qed'] = -properties['qed']  # to be minimized
+            properties = samples.loc[:, ['SAS', 'logP', 'CA9', 'GPX4']]  # qed: the larger the better, SAS: the smaller the better, logP: the smaller the better
+            # properties['qed'] = -properties['qed']  # to be minimized
             # properties['SAS'] = properties['SAS'] # to be minimized
             properties = properties.to_numpy()
 
@@ -233,8 +232,8 @@ class DEL():
 
             # combined properties
             # combined_properties = np.vstack( (properties, new_properties) ) # numpy array
-            combined_properties = combined_samples.loc[:, ['qed', 'SAS', 'logP']]
-            combined_properties['qed'] = -combined_properties['qed']  # to be minimized
+            combined_properties = combined_samples.loc[:, ['SAS', 'logP', 'CA9', 'GPX4']]
+            # combined_properties['qed'] = -combined_properties['qed']  # to be minimized
             # combined_properties['SAS'] = combined_properties['SAS'] # to be minimized
             combined_properties = combined_properties.to_numpy()
             # sort all samples
