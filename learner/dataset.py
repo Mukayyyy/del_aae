@@ -70,11 +70,11 @@ class SMILESDataset(Dataset):
         return len(self.data)
 
     def get_loader(self, shuffle=True):
+        torch.multiprocessing.set_start_method('spawn') 
         def aae_get_collate_fn():
             def collate(data):
                 prps = [p[1:] for p in data]
                 props = np.array(prps, dtype=float)
-                torch.multiprocessing.set_start_method('spawn') 
                 properties = torch.tensor(props, dtype=torch.float, device=self.device)
                 tensors = [string2tensor(string[0], self.vocab) for string in data]
                 lengths = torch.tensor([len(t) for t in tensors], dtype=torch.long, device=self.device)
