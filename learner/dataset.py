@@ -59,6 +59,7 @@ class SMILESDataset(Dataset):
         self.data.drop(columns=['mr'], inplace=True)
         self.vocab = CharVocab(self.data['smiles'])
         self.device = 'cuda' if self.config.get('use_gpu') and torch.cuda.is_available() else 'cpu'
+        torch.multiprocessing.set_start_method('spawn')
 
     def get_data(self):
         return self.data
@@ -69,8 +70,7 @@ class SMILESDataset(Dataset):
     def __len__(self):
         return len(self.data)
 
-    def get_loader(self, shuffle=True):
-        torch.multiprocessing.set_start_method('spawn') 
+    def get_loader(self, shuffle=True): 
         def aae_get_collate_fn():
             def collate(data):
                 prps = [p[1:] for p in data]

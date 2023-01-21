@@ -1,6 +1,6 @@
 from .conversion import mol_to_smiles
 
-def adock_gpx4(receptor_input,
+def adock(receptor_input,
         smiles,
         ligand_name,
         center_x=-9.67,
@@ -12,10 +12,10 @@ def adock_gpx4(receptor_input,
         vina='qvina2',
         seed=None,
         cpu=1,
-        lig_dir = './new_BAS/ligand_files/',
-        out_dir = './new_BAS/output/',
-        log_dir = './new_BAS/log/',
-        conf_dir = './new_BAS/config/'):
+        lig_dir = '../GPX4/ligand_files/',
+        out_dir = '../GPX4/output/',
+        log_dir = '../GPX4/log/',
+        conf_dir = '../GPX4/config/'):
 
     #Imports
     import os
@@ -100,7 +100,7 @@ def adock_gpx4(receptor_input,
 
 
 def calculateDockingScoreGPX4(mol):
-    protein_surface = './DATA/protein_files/6rqu.pdbqt'
+    protein_surface = './DATA/protein_files/6hn3.pdbqt'
     smi = mol_to_smiles(mol)
     ligand_name = smi.replace('(', '{').replace(')', '}')
-    return adock_gpx4(protein_surface, smi, ligand_name)
+    return adock(protein_surface, smi, ligand_name)

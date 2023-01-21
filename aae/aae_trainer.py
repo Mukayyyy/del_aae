@@ -97,7 +97,6 @@ class AAE_Trainer:
             # properties = properties.to(self.device)
 
             ''' RECONSTRUCTION PHASE '''
-            torch.multiprocessing.set_start_method('spawn')
             latent_cell_state = model.encoder_forward(*encoder_inputs)  # Shape: Batch size x latent_size
 
             # Output data shape: batch size x vocab length x embedding size

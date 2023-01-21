@@ -3,19 +3,19 @@ from .conversion import mol_to_smiles
 def adock(receptor_input,
         smiles,
         ligand_name,
-        center_x=9.879,
-        center_y=-13.774,
-        center_z=7.012,
+        center_x=7.750,
+        center_y=-14.556,
+        center_z=6.747,
         size_x=20,
         size_y=20,
         size_z=20,
         vina='qvina2',
         seed=None,
         cpu=1,
-        lig_dir = './new_BAS/ligand_files/',
-        out_dir = './new_BAS/output/',
-        log_dir = './new_BAS/log/',
-        conf_dir = './new_BAS/config/'):
+        lig_dir = '../new_BAS/ligand_files/',
+        out_dir = '../new_BAS/output/',
+        log_dir = '../new_BAS/log/',
+        conf_dir = '../new_BAS/config/'):
 
     #Imports
     import os
