@@ -71,42 +71,46 @@ class SMILESDataset(Dataset):
         return len(self.data)
 
     def get_loader(self, shuffle=True): 
-        def aae_get_collate_fn():
-            global collate
-            def collate(data):
-                prps = [p[1:] for p in data]
-                props = np.array(prps, dtype=float)
-                properties = torch.tensor(props, dtype=torch.float, device=self.device)
-                tensors = [string2tensor(string[0], self.vocab) for string in data]
-                lengths = torch.tensor([len(t) for t in tensors], dtype=torch.long, device=self.device)
-                encoder_inputs = pad_sequence(tensors,
-                                              batch_first=True,
-                                              padding_value=self.vocab.pad)
-                encoder_input_lengths = lengths - 2
+        global collate
 
-                decoder_inputs = pad_sequence([t[:-1] for t in tensors],
-                                              batch_first=True,
-                                              padding_value=self.vocab.pad)
-                decoder_input_lengths = lengths - 1
+        def collate(data):
+            prps = [p[1:] for p in data]
+            props = np.array(prps, dtype=float)
+            properties = torch.tensor(props, dtype=torch.float, device=self.device)
+            tensors = [string2tensor(string[0], self.vocab) for string in data]
+            lengths = torch.tensor([len(t) for t in tensors], dtype=torch.long, device=self.device)
+            encoder_inputs = pad_sequence(tensors,
+                                            batch_first=True,
+                                            padding_value=self.vocab.pad)
+            encoder_input_lengths = lengths - 2
 
-                decoder_targets = pad_sequence([t[1:] for t in tensors],
-                                               batch_first=True,
-                                               padding_value=self.vocab.pad)
-                decoder_target_lengths = lengths - 1
+            decoder_inputs = pad_sequence([t[:-1] for t in tensors],
+                                            batch_first=True,
+                                            padding_value=self.vocab.pad)
+            decoder_input_lengths = lengths - 1
 
-                return (encoder_inputs, encoder_input_lengths), \
-                       (decoder_inputs, decoder_input_lengths), \
-                       (decoder_targets, decoder_target_lengths), properties
+            decoder_targets = pad_sequence([t[1:] for t in tensors],
+                                            batch_first=True,
+                                            padding_value=self.vocab.pad)
+            decoder_target_lengths = lengths - 1
 
-            return collate
+            return (encoder_inputs, encoder_input_lengths), \
+                    (decoder_inputs, decoder_input_lengths), \
+                    (decoder_targets, decoder_target_lengths), properties
+
+        # def aae_get_collate_fn():
+        #     global collate
+
+
+        #     return collate
 
         start = time.time()
-        collator = aae_get_collate_fn()
+        # collator = aae_get_collate_fn()
         loader_data = self.data.loc[:, self.fieldnames].to_numpy()
         loader = DataLoader(dataset=loader_data,
                             batch_size=self.config.get('batch_size'),
                             shuffle=shuffle,
-                            collate_fn=collator,
+                            collate_fn=collate,
                             # Advised to speed up training
                             # num_workers>0 fails on Windows
                             num_workers=4,
