@@ -12,10 +12,10 @@ def adock(receptor_input,
         vina='qvina2',
         seed=None,
         cpu=1,
-        lig_dir = '../new_BAS/ligand_files/',
-        out_dir = '../new_BAS/output/',
-        log_dir = '../new_BAS/log/',
-        conf_dir = '../new_BAS/config/'):
+        lig_dir = '../ca9_scores/ligand_files/',
+        out_dir = '../ca9_scores/output/',
+        log_dir = '../ca9_scores/log/',
+        conf_dir = '../ca9_scores/config/'):
 
     #Imports
     import os
@@ -100,7 +100,7 @@ def adock(receptor_input,
 
 
 def calculateDockingScore(mol):
-    protein_surface = './DATA/protein_files/6rqu.pdbqt'
+    protein_surface = './DATA/protein_files/6rqu_zinc.pdbqt'
     smi = mol_to_smiles(mol)
     ligand_name = smi.replace('(', '{').replace(')', '}')
     return adock(protein_surface, smi, ligand_name)

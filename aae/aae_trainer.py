@@ -61,7 +61,7 @@ class AAE_Trainer:
         self.sched_gamma = config.get('sched_gamma')
         self.use_scheduler = config.get('use_scheduler')
         self.use_gpu = config.get('use_gpu')
-        torch.multiprocessing.set_start_method('spawn')
+        # torch.multiprocessing.set_start_method('spawn')
         self.device = 'cuda' if (self.use_gpu and torch.cuda.is_available()) else 'cpu'
 
         # Training Tools

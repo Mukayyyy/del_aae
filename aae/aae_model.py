@@ -74,7 +74,7 @@ class mlp_net(nn.Module):
         super(mlp_net, self).__init__()
 
         input_features = [input_size] + layers
-        output_features = layers + [3]
+        output_features = layers + [4]
 
         self.layers_seq = nn.Sequential()
         for k, (i, o) in enumerate(zip(input_features, output_features)):

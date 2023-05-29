@@ -180,7 +180,7 @@ class AAE_DEL:
                 print('Fast Non-Dominated Sort to get Fronts...')
                 rank, Fs = self.fast_nondominated_sort(properties)
                 print('Crowding Distance Sort for each Front...')
-                _, dists_vec = self.crowding_distance_all_fronts(properties, Fs, p_min, p_max, n_jobs=-1)
+                _, dists_vec = self.crowding_distance_all_fronts(properties, Fs, p_min, p_max, n_jobs=16)
 
                 print('Evolutionary Operations: Selection, Recombination, Mutation on Z...')
                 z = self.evol_ops(z, rank, dists_vec,
@@ -276,7 +276,7 @@ class AAE_DEL:
             else:
                 # Rank All Samples
                 rank, Fs = self.fast_nondominated_sort(combined_properties)
-                dists_all, dists_vec = self.crowding_distance_all_fronts(combined_properties, Fs, p_min, p_max, n_jobs=-1)
+                dists_all, dists_vec = self.crowding_distance_all_fronts(combined_properties, Fs, p_min, p_max, n_jobs=16)
 
                 combined_size = len(rank)
                 if combined_size < self.population_size:
@@ -349,7 +349,7 @@ class AAE_DEL:
         print('Done DEL training.')
         # return self.new_pop, self.new_rank, self.new_Fs, self.new_dists
 
-    def get_properties(self, samples, n_jobs=-1):
+    def get_properties(self, samples, n_jobs=16):
 
         info = get_dataset_info(self.config.get('dataset'))
         samples = pd.DataFrame(samples, columns=['smiles'])
@@ -408,7 +408,7 @@ class AAE_DEL:
         sas_rank, logp_rank, ca9_rank, gpx4_rank = \
             np.empty_like(sas_order), np.empty_like(logp_order), np.empty_like(ca9_order), np.empty_like(gpx4_order)
         sas_rank[sas_order], logp_rank[logp_order], ca9_rank[ca9_order], gpx4_rank[gpx4_order] = \
-            np.arange(N), np.arange(N), np.arange(N)
+            np.arange(N), np.arange(N), np.arange(N), np.arange(N)
 
         # Get Rank Sums
         ranks = np.array([np.sum([sas_rank[i], logp_rank[i], ca9_rank[i], gpx4_rank[i]]) for i in range(N)])
@@ -545,7 +545,7 @@ class AAE_DEL:
 
         return dists
 
-    def crowding_distance_all_fronts(self, P, Fs, f_min, f_max, n_jobs=-1):
+    def crowding_distance_all_fronts(self, P, Fs, f_min, f_max, n_jobs=16):
         '''
         P: Properties
         Fs: fronts
@@ -587,7 +587,7 @@ class AAE_DEL:
         selected = candidates_ordered[sel_i]
         return selected
 
-    def tournament_selection_N(self, num, rank, dists_vec, prob_ts, k=2, n_jobs=-1):
+    def tournament_selection_N(self, num, rank, dists_vec, prob_ts, k=2, n_jobs=16):
         '''
         Select num points
         k: scalar, number of points to be randomly selected from the population

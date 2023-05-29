@@ -87,7 +87,7 @@ def command_parser():
     # Epochs
     subps_aae.add_argument(
         "--num_epochs",
-        type=int, default=20,
+        type=int, default=5,
         help='Number of Epochs'
     )
     # Learning Rate
@@ -246,7 +246,7 @@ def command_parser():
     # Initial Epochs
     subps_aae_del.add_argument(
         "--init_num_epochs",
-        type=int, default=50,
+        type=int, default=20,
         help='Number of Initial Epochs'
     )
     # Learning Rate
@@ -284,7 +284,7 @@ def command_parser():
     # Number of Generations
     subps_aae_del.add_argument(
         '--num_generations',
-        type=int, default=10,
+        type=int, default=20,
         help='Number of DEL Generations'
     )
     # Population Size
@@ -296,7 +296,7 @@ def command_parser():
     # Subsequent Epochs
     subps_aae_del.add_argument(
         "--subsequent_num_epochs",
-        type=int, default=30,
+        type=int, default=5,
         help='Number of Subsequent Epochs After First Generation'
     )
     # Probability of Tournament Selection
@@ -357,6 +357,7 @@ def command_parser():
     # Save Every Population
     subps_aae_del.add_argument(
         '--save_pops',
+        default=True,
         action='store_true',
         help='Store Every Population During DEL Training'
     )

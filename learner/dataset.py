@@ -72,7 +72,7 @@ class SMILESDataset(Dataset):
 
     def get_loader(self, shuffle=True): 
         def aae_get_collate_fn():
-            global collate
+            # global collate
             def collate(data):
                 prps = [p[1:] for p in data]
                 props = np.array(prps, dtype=float)
@@ -109,8 +109,8 @@ class SMILESDataset(Dataset):
                             collate_fn=collator,
                             # Advised to speed up training
                             # num_workers>0 fails on Windows
-                            num_workers=4,
-                            pin_memory=True
+                            num_workers=0,
+                            # pin_memory=True
                             )
         end = time.time() - start
         elapsed = time.strftime("%H:%M:%S", time.gmtime(end))

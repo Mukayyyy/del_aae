@@ -182,7 +182,7 @@ class DEL():
             print('Fast non-dominated sort to get fronts ...')
             rank, Fs = self.fast_nondominated_sort(properties)
             print('Crowding distance sort for each front ...')
-            _, dists_vec = self.crowding_distance_all_fronts(properties, Fs, p_min, p_max, n_jobs=-1)
+            _, dists_vec = self.crowding_distance_all_fronts(properties, Fs, p_min, p_max, n_jobs=16)
 
             print('Evolutionary operations: selection, recombination, and mutation ...')
             # pm=properties.mean().to_numpy() # properties mean
@@ -238,7 +238,7 @@ class DEL():
             combined_properties = combined_properties.to_numpy()
             # sort all samples
             rank, Fs = self.fast_nondominated_sort(combined_properties)
-            dists_all, dists_vec = self.crowding_distance_all_fronts(combined_properties, Fs, p_min, p_max, n_jobs=-1)
+            dists_all, dists_vec = self.crowding_distance_all_fronts(combined_properties, Fs, p_min, p_max, n_jobs=16)
 
             combined_size = len(rank)
             if combined_size < self.population_size:
@@ -381,7 +381,7 @@ class DEL():
         """
         # selection
         N = rank.shape[0]
-        selected_inds = self.tournament_selection_N(N, rank, dists_vec, prob_ts=prob_ts, k=2, n_jobs=-1)
+        selected_inds = self.tournament_selection_N(N, rank, dists_vec, prob_ts=prob_ts, k=2, n_jobs=16)
         selected_points = z[selected_inds]
 
         new_data = []
@@ -442,7 +442,7 @@ class DEL():
     #        selected_inds = pjob( delayed(self.tournament_selection)(rank, dists_vec, prob_ts, k) for n in range(num) )
     #        return selected_inds
 
-    def tournament_selection_N(self, num, rank, dists_vec, prob_ts, k=2, n_jobs=-1):
+    def tournament_selection_N(self, num, rank, dists_vec, prob_ts, k=2, n_jobs=16):
         """
         Select num points.
         k: scalar, number of points to be randomly selected from the population.
@@ -504,7 +504,7 @@ class DEL():
     def generate_sample(self):
         pass
 
-    def get_properties(self, samples, n_jobs=-1):
+    def get_properties(self, samples, n_jobs=16):
         info = get_dataset_info(self.config.get('dataset'))
 
         columns = ["smiles", "fragments", "n_fragments"]
@@ -606,7 +606,7 @@ class DEL():
     #            dists_vec[F] = D
     #        return dists_all, dists_vec
 
-    def crowding_distance_all_fronts(self, P, Fs, f_min, f_max, n_jobs=-1):
+    def crowding_distance_all_fronts(self, P, Fs, f_min, f_max, n_jobs=16):
         """
         P: properties.
         Fs: fronts.

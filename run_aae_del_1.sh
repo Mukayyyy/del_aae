@@ -22,6 +22,6 @@ declare -a datasets=("ZINC")
 for dataset in ${datasets[@]}
 do
 
-python manage.py del --dataset "${dataset}" --random_seed "$((141+n))" --ranking sopr --batch_size 256 --use_gpu
+python manage.py del --dataset "${dataset}" --random_seed "$((141+n))" --ranking fndr --batch_size 128 --use_gpu
 
 done

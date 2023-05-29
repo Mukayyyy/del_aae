@@ -56,32 +56,32 @@ DEFAULTS = {
     'reproduce': False,
     'sampling_seed': None,
     # predictor
-    'predictor_num_layers': 3,
+    'predictor_num_layers': 4,
     'predictor_hidden_size': 64,
-    'predictor_output_size': 3,
+    'predictor_output_size': 4,
     'a_alpha': 1,  # for calculating alpha
-    'l_alpha': 0,  # for calculating alpha
-    'u_alpha': 10,  # for calculating alpha
-    'k_alpha': 0,  # for calculating alpha
-    'a_beta': 1,  # for calculating beta
-    'l_beta': 0,  # for calculating beta
-    'u_beta': 10,  # for calculating beta
+    'l_alpha': 1,  # for calculating alpha
+    'u_alpha': 100,  # for calculating alpha
+    'k_alpha': 1,  # for calculating alpha
+    'a_beta': 0.1,  # for calculating beta
+    'l_beta': 0.1,  # for calculating beta
+    'u_beta': 1,  # for calculating beta
     'k_beta': 1,  # for calculating beta
     'start_epoch': 0,
     'offset_epoch': 0,
     # del
-    'num_generations': 100,
-    'population_size': 10000,
-    'init_num_epochs': 70,
-    'subsequent_num_epochs': 10,
+    'num_generations': 20,
+    'population_size': 20000,
+    'init_num_epochs': 20,
+    'subsequent_num_epochs': 5,
     'prob_ts': 0.95,
     'crossover': 'linear',
     'mutation': 0.01,
-    'save_pops': False,
+    'save_pops': True,
     'no_finetune': False,
     'increase_alpha': 1,
     'increase_beta': 1,
-    'ranking': 'sopr',
+    'ranking': 'fndr',
     # BO
     'num_initial_samples': 2000,
     'batch_size_bo': 64,
