@@ -70,7 +70,7 @@ class SMILESDataset(Dataset):
     def __len__(self):
         return len(self.data)
 
-    def get_loader(self, shuffle=True): 
+    def get_loader(self, shuffle=True):
         def aae_get_collate_fn():
             # global collate
             def collate(data):
@@ -101,12 +101,12 @@ class SMILESDataset(Dataset):
             return collate
 
         start = time.time()
-        collator = aae_get_collate_fn()
+        # collator = aae_get_collate_fn()
         loader_data = self.data.loc[:, self.fieldnames].to_numpy()
         loader = DataLoader(dataset=loader_data,
                             batch_size=self.config.get('batch_size'),
                             shuffle=shuffle,
-                            collate_fn=collator,
+                            collate_fn=collate,
                             # Advised to speed up training
                             # num_workers>0 fails on Windows
                             num_workers=0,
